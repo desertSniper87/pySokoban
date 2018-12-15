@@ -70,6 +70,7 @@ def movePlayer(direction,myLevel):
         print("######### Moving Left #########")
 
         # if is_space
+
         if matrix[y][x-1] == " ":
             print("OK Space Found")
             matrix[y][x-1] = "@"
@@ -369,7 +370,7 @@ def initLevel(level_set,level):
 myEnvironment = Environment()
 
 # Choose a theme
-theme = "default"
+theme = "soft"
 
 # Choose a level set
 level_set = "original"

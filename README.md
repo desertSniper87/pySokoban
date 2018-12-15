@@ -2,7 +2,7 @@
 Sokoban is a japanese transport puzzle game originally developped by Hiroyuki Imabayashi in 1982. The name comes from Japan and means "warehouse keeper". The player pushes boxes or crates around in a warehouse, trying to get them to storage locations. This implementation is based on Python & pyGame Library.
 
 ## System Requirements
-Python 2.7 & pyGame 1.9
+Python 3.6 & pyGame 1.9
 
 ## How to play
 Use arrows keys to move player  
