@@ -3,6 +3,8 @@
 # Author: Kazantzakis Nikos <kazantzakisnikos@gmail.com>
 # Date: 2015
 # Last Modified: 31-03-2016
+import datetime
+import pickle
 
 import pygame
 import time
@@ -380,6 +382,17 @@ def initLevel(level_set,level):
     global target_found
     target_found = False
 
+def savegame(current_level):
+    """screenshot
+
+    :return:
+    """
+    fileName = "savegames/savegame_level_" + str(current_level) + \
+               "_time_" + datetime.date.strftime(datetime.datetime.now(), "%Y-%m-%d-%H-%M-%S") + \
+               ".pickle"
+    print("Saving game")
+    with open(fileName, "wb") as f:
+        pickle.dump(myLevel, f)
 
 # Create the environment
 myEnvironment = Environment()
@@ -391,7 +404,7 @@ theme = "soft"
 level_set = "original"
 
 # Set the start Level
-current_level = 1
+current_level = 8
 
 # Initialize Level
 initLevel(level_set,current_level)
@@ -418,6 +431,8 @@ while True:
                 initLevel(level_set,current_level)
             elif event.key == pygame.K_s and pygame.key.get_mods() & pygame.KMOD_SHIFT:
                 myEnvironment.saveScreen(current_level)
+            elif event.key == pygame.K_w and pygame.key.get_mods() & pygame.KMOD_SHIFT:
+                savegame(current_level)
             elif event.key == pygame.K_n and pygame.key.get_mods() & pygame.KMOD_SHIFT:
                 print (f"Going to level {current_level}")
                 nextLevel(skip=True)
