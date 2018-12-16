@@ -1,3 +1,4 @@
+import datetime
 import os
 import platform
 import pygame
@@ -77,3 +78,10 @@ class Environment:
 
     def getPath(self):
         return os.path.dirname(os.path.abspath(__file__))
+
+    def saveScreen(self, current_level):
+        print(os.getcwd())
+        screenshot_name = "screenshots/screenshot_level_" + str(current_level) +\
+                          "_time_" + datetime.date.strftime(datetime.datetime.now() ,"%Y-%m-%d-%H-%M-%S") +\
+                          ".jpg"
+        pygame.image.save(self.screen, screenshot_name)
