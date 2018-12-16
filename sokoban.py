@@ -352,6 +352,11 @@ def movePlayer(direction, myLevel):
     if len(myLevel.getBoxes()) == 0:
         nextLevel()
 
+def moveFiveSteps(direction, myLevel):
+    for i in range(5):
+        movePlayer(direction, myLevel)
+
+
 def nextLevel(skip=0):
     """TODO: Docstring for nextLevel.
 
@@ -404,7 +409,7 @@ theme = "soft"
 level_set = "original"
 
 # Set the start Level
-current_level = 8
+current_level = 10
 
 # Initialize Level
 initLevel(level_set,current_level)
@@ -415,13 +420,29 @@ while True:
     for event in pygame.event.get():
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_LEFT:
-                movePlayer("L", myLevel)
+                if pygame.key.get_mods() and pygame.KMOD_LSHIFT:
+                    moveFiveSteps("L", myLevel)
+                else:
+                    movePlayer("L", myLevel)
+
             elif event.key == pygame.K_RIGHT:
-                movePlayer("R", myLevel)
+                if pygame.key.get_mods() and pygame.KMOD_LSHIFT:
+                    moveFiveSteps("R", myLevel)
+                else:
+                    movePlayer("R", myLevel)
+
             elif event.key == pygame.K_DOWN:
-                movePlayer("D", myLevel)
+                if pygame.key.get_mods() and pygame.KMOD_LSHIFT:
+                    moveFiveSteps("D", myLevel)
+                else:
+                    movePlayer("D", myLevel)
+
             elif event.key == pygame.K_UP:
-                movePlayer("U", myLevel)
+                if pygame.key.get_mods() and pygame.KMOD_LSHIFT:
+                    moveFiveSteps("U", myLevel)
+                else:
+                    movePlayer("U", myLevel)
+
             elif event.key == pygame.K_u:
                 if pygame.key.get_mods() and pygame.KMOD_LSHIFT:
                     drawLevel(myLevel.getLastMatrix(5))
