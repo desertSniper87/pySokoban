@@ -60,4 +60,3 @@ class Level:
             if row_length > max_row_length:
                 max_row_length = row_length
         return [max_row_length,len(self.matrix)]
-		

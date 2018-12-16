@@ -52,7 +52,7 @@ def drawLevel(matrix_to_draw):
 
     pygame.display.update()
 
-def movePlayer(direction,myLevel):
+def movePlayer(direction, myLevel):
 
     matrix = myLevel.getMatrix()
 
@@ -348,11 +348,26 @@ def movePlayer(direction,myLevel):
     print("Boxes remaining: " + str(len(myLevel.getBoxes())))
 
     if len(myLevel.getBoxes()) == 0:
-        myEnvironment.screen.fill((0, 0, 0))
+        nextLevel()
+
+def nextLevel(skip=0):
+    """TODO: Docstring for nextLevel.
+
+    :skip: whether we are skipping the level
+    :type skip: bool
+    :returns: None
+
+    """
+    myEnvironment.screen.fill((221, 213, 172))
+    if skip == 0:
         print("Level Completed")
-        global current_level
-        current_level += 1
-        initLevel(level_set,current_level)
+    else:
+        print("Skipping the level")
+    global current_level
+    current_level += 1
+    initLevel(level_set,current_level)
+    
+
 
 def initLevel(level_set,level):
     # Create an instance of this Level
@@ -384,24 +399,28 @@ initLevel(level_set,current_level)
 target_found = False
 
 while True:
-
     for event in pygame.event.get():
         if event.type == pygame.KEYDOWN:
             if event.key == pygame.K_LEFT:
-                movePlayer("L",myLevel)
+                movePlayer("L", myLevel)
             elif event.key == pygame.K_RIGHT:
-                movePlayer("R",myLevel)
+                movePlayer("R", myLevel)
             elif event.key == pygame.K_DOWN:
-                movePlayer("D",myLevel)
+                movePlayer("D", myLevel)
             elif event.key == pygame.K_UP:
-                movePlayer("U",myLevel)
+                movePlayer("U", myLevel)
             elif event.key == pygame.K_u:
                 drawLevel(myLevel.getLastMatrix())
             elif event.key == pygame.K_r:
                 initLevel(level_set,current_level)
+            elif event.key == pygame.K_n and pygame.key.get_mods() & pygame.KMOD_SHIFT:
+                print (f"Going to level {current_level}")
+                nextLevel(skip=True)
+
             elif event.key == pygame.K_ESCAPE:
                 pygame.quit()
                 sys.exit()
+
         elif event.type == pygame.QUIT:
             pygame.quit()
             sys.exit()

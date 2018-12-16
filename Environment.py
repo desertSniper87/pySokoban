@@ -55,7 +55,7 @@ class Environment:
             self.screen = pygame.display.set_mode(self.size, pygame.FULLSCREEN)
 
         # Clear the screen to start
-        self.screen.fill((0, 0, 0))
+        self.screen.fill((221, 213, 172))
         # Initialise font support
         pygame.font.init()
         # Disable mouse
