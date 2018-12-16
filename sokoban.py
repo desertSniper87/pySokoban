@@ -410,12 +410,14 @@ while True:
             elif event.key == pygame.K_UP:
                 movePlayer("U", myLevel)
             elif event.key == pygame.K_u:
-                drawLevel(myLevel.getLastMatrix())
+                if pygame.key.get_mods() and pygame.KMOD_LSHIFT:
+                    drawLevel(myLevel.getLastMatrix(5))
+                else:
+                    drawLevel(myLevel.getLastMatrix())
             elif event.key == pygame.K_r:
                 initLevel(level_set,current_level)
             elif event.key == pygame.K_s and pygame.key.get_mods() & pygame.KMOD_SHIFT:
                 myEnvironment.saveScreen(current_level)
-
             elif event.key == pygame.K_n and pygame.key.get_mods() & pygame.KMOD_SHIFT:
                 print (f"Going to level {current_level}")
                 nextLevel(skip=True)

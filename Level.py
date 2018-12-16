@@ -25,10 +25,11 @@ class Level:
     def addToHistory(self,matrix):
         self.matrix_history.append(copy.deepcopy(matrix))
 
-    def getLastMatrix(self):
-        if len(self.matrix_history) > 0:
-            lastMatrix = self.matrix_history.pop()
-            self.matrix = lastMatrix
+    def getLastMatrix(self, times=1):
+        if len(self.matrix_history) >= times:
+            for i in range(times):
+                lastMatrix = self.matrix_history.pop()
+                self.matrix = lastMatrix
             return lastMatrix
         else:
             return self.matrix
