@@ -6,7 +6,7 @@ class Level:
     matrix = []
     matrix_history = []
 
-    def __init__(self,set,level_num):
+    def __init__(self, set, level_num):
 
         del self.matrix[:]
         del self.matrix_history[:]
@@ -16,11 +16,15 @@ class Level:
             for row in f.read().splitlines():
                 self.matrix.append(list(row))
 
+
     def __del__(self):
         "Destructor to make sure object shuts down, etc."
 
     def getMatrix(self):
         return self.matrix
+
+    def getFile(self):
+        return self.filePath
 
     def addToHistory(self,matrix):
         self.matrix_history.append(copy.deepcopy(matrix))
