@@ -79,6 +79,12 @@ class Environment:
     def getPath(self):
         return os.path.dirname(os.path.abspath(__file__))
 
+    def getScreen(self):
+        if self.screen is not None:
+            return self.screen
+        else:
+            raise Exception
+
     def saveScreen(self, current_level):
         screenshot_name = "screenshots/screenshot_level_" + str(current_level) +\
                           "_time_" + datetime.date.strftime(datetime.datetime.now() ,"%Y-%m-%d-%H-%M-%S") +\

@@ -16,6 +16,9 @@ from Environment import Environment
 from Level import Level
 from solver import IDAstar, heuristic, depth_first_search__scan
 
+import pygameMenu
+from pygameMenu.locals import *
+
 
 def drawLevel(matrix_to_draw):
 
@@ -423,33 +426,67 @@ myLevel = initLevel(level_set,current_level)
 
 target_found = False
 
-smap = SokoMap.SokoMap()
-smap.readMap(os.path.dirname(os.path.abspath(__file__)) + '/levels/' + level_set + '/level' + str(current_level),)
-solution = IDAstar(smap, heuristic)
-if solution is not None:
-    solution.printMap()
-    print(solution.getMoveList())
+main_menu = pygameMenu.Menu(
+    dopause=True,
+    onclose=,
+    menu_height=200,
+    menu_width=300,
+    window_height=800,
+    window_width=600,
+    surface=myEnvironment.getScreen(),
+    font=pygameMenu.fonts.FONT_8BIT,
+    title='pySokoban',
+    bgfun=lambda : myEnvironment.getScreen().fill((40, 0, 40))
+)
 
-    for i in solution.getMoveList():
-        time.sleep(0.10)
+def exit_menu():
+    print("Khaleda Zia")
+    main_menu.disable()
+    main_menu.reset(1)
 
-        if i == (1, 0):
-            movePlayer("R", myLevel)
+main_menu.add_option('Exit', exit_menu)
 
-        if i == (0, 1):
-            movePlayer("D", myLevel)
 
-        if i == (-1, 0):
-            movePlayer("L", myLevel)
 
-        if i == (0, -1):
-            movePlayer("U", myLevel)
+
+
+
+def solve():
+    smap = SokoMap.SokoMap()
+    smap.readMap(os.path.dirname(os.path.abspath(__file__)) + '/levels/' + level_set + '/level' + str(current_level), )
+    solution = IDAstar(smap, heuristic)
+    if solution is not None:
+        solution.printMap()
+        print(solution.getMoveList())
+
+        for i in solution.getMoveList():
+            time.sleep(0.10)
+
+            if i == (1, 0):
+                movePlayer("R", myLevel)
+
+            if i == (0, 1):
+                movePlayer("D", myLevel)
+
+            if i == (-1, 0):
+                movePlayer("L", myLevel)
+
+            if i == (0, -1):
+                movePlayer("U", myLevel)
 
 
 while True:
-    for event in pygame.event.get():
+    playEvents = pygame.event.get()
+    for event in playEvents:
+        # main_menu.mainloop(event)
         if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_LEFT:
+            if event.key == pygame.K_ESCAPE and main_menu.is_enabled():
+                print("Sheikh Hasina")
+                main_menu.enable()
+                break
+
+
+            elif event.key == pygame.K_LEFT:
                 if pygame.key.get_mods() and pygame.KMOD_LSHIFT:
                     moveFiveSteps("L", myLevel)
                 else:
@@ -495,3 +532,7 @@ while True:
         elif event.type == pygame.QUIT:
             pygame.quit()
             sys.exit()
+
+    main_menu.mainloop(playEvents)
+    pygame.display.flip()
+
