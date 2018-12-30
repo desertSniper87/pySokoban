@@ -4,13 +4,18 @@
 # Date: 2015
 # Last Modified: 31-03-2016
 import datetime
+import os
 import pickle
 
 import pygame
 import time
 import sys
+
+import SokoMap
 from Environment import Environment
 from Level import Level
+from solver import IDAstar, heuristic, depth_first_search__scan
+
 
 def drawLevel(matrix_to_draw):
 
@@ -387,6 +392,8 @@ def initLevel(level_set,level):
     global target_found
     target_found = False
 
+    return myLevel
+
 def savegame(current_level):
     """screenshot
 
@@ -412,9 +419,32 @@ level_set = "original"
 current_level = 11
 
 # Initialize Level
-initLevel(level_set,current_level)
+myLevel = initLevel(level_set,current_level)
 
 target_found = False
+
+smap = SokoMap.SokoMap()
+smap.readMap(os.path.dirname(os.path.abspath(__file__)) + '/levels/' + level_set + '/level' + str(current_level),)
+solution = IDAstar(smap, heuristic)
+if solution is not None:
+    solution.printMap()
+    print(solution.getMoveList())
+
+    for i in solution.getMoveList():
+        time.sleep(0.10)
+
+        if i == (1, 0):
+            movePlayer("R", myLevel)
+
+        if i == (0, 1):
+            movePlayer("D", myLevel)
+
+        if i == (-1, 0):
+            movePlayer("L", myLevel)
+
+        if i == (0, -1):
+            movePlayer("U", myLevel)
+
 
 while True:
     for event in pygame.event.get():
