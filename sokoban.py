@@ -14,7 +14,7 @@ import sys
 import SokoMap
 from Environment import Environment
 from Level import Level
-from solver import IDAstar, heuristic
+from solver import IDAstar, heuristic, depth_first_search__scan
 
 
 def drawLevel(matrix_to_draw):
@@ -413,10 +413,10 @@ myEnvironment = Environment()
 theme = "soft"
 
 # Choose a level set
-level_set = "willy_testmaps"
+level_set = "original"
 
 # Set the start Level
-current_level = 1
+current_level = 11
 
 # Initialize Level
 myLevel = initLevel(level_set,current_level)
@@ -431,7 +431,7 @@ if solution is not None:
     print(solution.getMoveList())
 
     for i in solution.getMoveList():
-        time.sleep(1)
+        time.sleep(0.10)
 
         if i == (1, 0):
             movePlayer("R", myLevel)
