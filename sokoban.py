@@ -18,11 +18,11 @@ from solver import IDAstar, heuristic, depth_first_search__scan
 
 
 def drawLevel(matrix_to_draw):
-
     # Load level images
     wall = pygame.image.load(myEnvironment.getPath() + '/themes/' + theme + '/images/wall.png').convert()
     box = pygame.image.load(myEnvironment.getPath() + '/themes/' + theme + '/images/box.png').convert()
-    box_on_target =  pygame.image.load(myEnvironment.getPath() + '/themes/' + theme + '/images/box_on_target.png').convert()
+    box_on_target = pygame.image.load(
+        myEnvironment.getPath() + '/themes/' + theme + '/images/box_on_target.png').convert()
     space = pygame.image.load(myEnvironment.getPath() + '/themes/' + theme + '/images/space.png').convert()
     target = pygame.image.load(myEnvironment.getPath() + '/themes/' + theme + '/images/target.png').convert()
     player = pygame.image.load(myEnvironment.getPath() + '/themes/' + theme + '/images/player.png').convert()
@@ -32,18 +32,18 @@ def drawLevel(matrix_to_draw):
 
         # If level's x size > level's y size then resize according to x axis
         if myLevel.getSize()[0] / myLevel.getSize()[1] >= 1:
-            new_image_size = myEnvironment.size[0]/myLevel.getSize()[0]
+            new_image_size = myEnvironment.size[0] / myLevel.getSize()[0]
         # If level's y size > level's x size then resize according to y axis
         else:
-            new_image_size = myEnvironment.size[1]/myLevel.getSize()[1]
+            new_image_size = myEnvironment.size[1] / myLevel.getSize()[1]
 
         # Just to the resize job
-        wall = pygame.transform.scale(wall, (new_image_size,new_image_size))
-        box = pygame.transform.scale(box, (new_image_size,new_image_size))
-        box_on_target = pygame.transform.scale(box_on_target, (new_image_size,new_image_size))
-        space = pygame.transform.scale(space, (new_image_size,new_image_size))
-        target = pygame.transform.scale(target, (new_image_size,new_image_size))
-        player = pygame.transform.scale(player, (new_image_size,new_image_size))
+        wall = pygame.transform.scale(wall, (new_image_size, new_image_size))
+        box = pygame.transform.scale(box, (new_image_size, new_image_size))
+        box_on_target = pygame.transform.scale(box_on_target, (new_image_size, new_image_size))
+        space = pygame.transform.scale(space, (new_image_size, new_image_size))
+        target = pygame.transform.scale(target, (new_image_size, new_image_size))
+        player = pygame.transform.scale(player, (new_image_size, new_image_size))
 
     # Just a Dictionary (associative array in pyhton's lingua) to map images to characters used in level design
     images = {'#': wall, ' ': space, '$': box, '.': target, '@': player, '*': box_on_target}
@@ -52,15 +52,15 @@ def drawLevel(matrix_to_draw):
     box_size = wall.get_width()
 
     # Iterate all Rows
-    for i in range (0,len(matrix_to_draw)):
+    for i in range(0, len(matrix_to_draw)):
         # Iterate all columns of the row
-        for c in range (0,len(matrix_to_draw[i])):
-            myEnvironment.screen.blit(images[matrix_to_draw[i][c]], (c*box_size, i*box_size))
+        for c in range(0, len(matrix_to_draw[i])):
+            myEnvironment.screen.blit(images[matrix_to_draw[i][c]], (c * box_size, i * box_size))
 
     pygame.display.update()
 
-def movePlayer(direction, myLevel):
 
+def movePlayer(direction, myLevel):
     matrix = myLevel.getMatrix()
 
     myLevel.addToHistory(matrix)
@@ -70,7 +70,7 @@ def movePlayer(direction, myLevel):
 
     global target_found
 
-    #print boxes
+    # print boxes
     print(myLevel.getBoxes())
 
     if direction == "L":
@@ -78,9 +78,9 @@ def movePlayer(direction, myLevel):
 
         # if is_space
 
-        if matrix[y][x-1] == " ":
+        if matrix[y][x - 1] == " ":
             print("OK Space Found")
-            matrix[y][x-1] = "@"
+            matrix[y][x - 1] = "@"
             if target_found == True:
                 matrix[y][x] = "."
                 target_found = False
@@ -88,19 +88,19 @@ def movePlayer(direction, myLevel):
                 matrix[y][x] = " "
 
         # if is_box
-        elif matrix[y][x-1] == "$":
+        elif matrix[y][x - 1] == "$":
             print("Box Found")
-            if matrix[y][x-2] == " ":
-                matrix[y][x-2] = "$"
-                matrix[y][x-1] = "@"
+            if matrix[y][x - 2] == " ":
+                matrix[y][x - 2] = "$"
+                matrix[y][x - 1] = "@"
                 if target_found == True:
                     matrix[y][x] = "."
                     target_found = False
                 else:
                     matrix[y][x] = " "
-            elif matrix[y][x-2] == ".":
-                matrix[y][x-2] = "*"
-                matrix[y][x-1] = "@"
+            elif matrix[y][x - 2] == ".":
+                matrix[y][x - 2] = "*"
+                matrix[y][x - 1] = "@"
                 if target_found == True:
                     matrix[y][x] = "."
                     target_found = False
@@ -109,20 +109,20 @@ def movePlayer(direction, myLevel):
 
 
         # if is_box_on_target
-        elif matrix[y][x-1] == "*":
+        elif matrix[y][x - 1] == "*":
             print("Box on target Found")
-            if matrix[y][x-2] == " ":
-                matrix[y][x-2] = "$"
-                matrix[y][x-1] = "@"
+            if matrix[y][x - 2] == " ":
+                matrix[y][x - 2] = "$"
+                matrix[y][x - 1] = "@"
                 if target_found == True:
                     matrix[y][x] = "."
                 else:
                     matrix[y][x] = " "
                 target_found = True
 
-            elif matrix[y][x-2] == ".":
-                matrix[y][x-2] = "*"
-                matrix[y][x-1] = "@"
+            elif matrix[y][x - 2] == ".":
+                matrix[y][x - 2] = "*"
+                matrix[y][x - 1] = "@"
                 if target_found == True:
                     matrix[y][x] = "."
                 else:
@@ -130,9 +130,9 @@ def movePlayer(direction, myLevel):
                 target_found = True
 
         # if is_target
-        elif matrix[y][x-1] == ".":
+        elif matrix[y][x - 1] == ".":
             print("Target Found")
-            matrix[y][x-1] = "@"
+            matrix[y][x - 1] = "@"
             if target_found == True:
                 matrix[y][x] = "."
             else:
@@ -147,9 +147,9 @@ def movePlayer(direction, myLevel):
         print("######### Moving Right #########")
 
         # if is_space
-        if matrix[y][x+1] == " ":
+        if matrix[y][x + 1] == " ":
             print("OK Space Found")
-            matrix[y][x+1] = "@"
+            matrix[y][x + 1] = "@"
             if target_found == True:
                 matrix[y][x] = "."
                 target_found = False
@@ -157,20 +157,20 @@ def movePlayer(direction, myLevel):
                 matrix[y][x] = " "
 
         # if is_box
-        elif matrix[y][x+1] == "$":
+        elif matrix[y][x + 1] == "$":
             print("Box Found")
-            if matrix[y][x+2] == " ":
-                matrix[y][x+2] = "$"
-                matrix[y][x+1] = "@"
+            if matrix[y][x + 2] == " ":
+                matrix[y][x + 2] = "$"
+                matrix[y][x + 1] = "@"
                 if target_found == True:
                     matrix[y][x] = "."
                     target_found = False
                 else:
                     matrix[y][x] = " "
 
-            elif matrix[y][x+2] == ".":
-                matrix[y][x+2] = "*"
-                matrix[y][x+1] = "@"
+            elif matrix[y][x + 2] == ".":
+                matrix[y][x + 2] = "*"
+                matrix[y][x + 1] = "@"
                 if target_found == True:
                     matrix[y][x] = "."
                     target_found = False
@@ -178,20 +178,20 @@ def movePlayer(direction, myLevel):
                     matrix[y][x] = " "
 
         # if is_box_on_target
-        elif matrix[y][x+1] == "*":
+        elif matrix[y][x + 1] == "*":
             print("Box on target Found")
-            if matrix[y][x+2] == " ":
-                matrix[y][x+2] = "$"
-                matrix[y][x+1] = "@"
+            if matrix[y][x + 2] == " ":
+                matrix[y][x + 2] = "$"
+                matrix[y][x + 1] = "@"
                 if target_found == True:
                     matrix[y][x] = "."
                 else:
                     matrix[y][x] = " "
                 target_found = True
 
-            elif matrix[y][x+2] == ".":
-                matrix[y][x+2] = "*"
-                matrix[y][x+1] = "@"
+            elif matrix[y][x + 2] == ".":
+                matrix[y][x + 2] = "*"
+                matrix[y][x + 1] = "@"
                 if target_found == True:
                     matrix[y][x] = "."
                 else:
@@ -199,9 +199,9 @@ def movePlayer(direction, myLevel):
                 target_found = True
 
         # if is_target
-        elif matrix[y][x+1] == ".":
+        elif matrix[y][x + 1] == ".":
             print("Target Found")
-            matrix[y][x+1] = "@"
+            matrix[y][x + 1] = "@"
             if target_found == True:
                 matrix[y][x] = "."
             else:
@@ -216,9 +216,9 @@ def movePlayer(direction, myLevel):
         print("######### Moving Down #########")
 
         # if is_space
-        if matrix[y+1][x] == " ":
+        if matrix[y + 1][x] == " ":
             print("OK Space Found")
-            matrix[y+1][x] = "@"
+            matrix[y + 1][x] = "@"
             if target_found == True:
                 matrix[y][x] = "."
                 target_found = False
@@ -226,20 +226,20 @@ def movePlayer(direction, myLevel):
                 matrix[y][x] = " "
 
         # if is_box
-        elif matrix[y+1][x] == "$":
+        elif matrix[y + 1][x] == "$":
             print("Box Found")
-            if matrix[y+2][x] == " ":
-                matrix[y+2][x] = "$"
-                matrix[y+1][x] = "@"
+            if matrix[y + 2][x] == " ":
+                matrix[y + 2][x] = "$"
+                matrix[y + 1][x] = "@"
                 if target_found == True:
                     matrix[y][x] = "."
                     target_found = False
                 else:
                     matrix[y][x] = " "
 
-            elif matrix[y+2][x] == ".":
-                matrix[y+2][x] = "*"
-                matrix[y+1][x] = "@"
+            elif matrix[y + 2][x] == ".":
+                matrix[y + 2][x] = "*"
+                matrix[y + 1][x] = "@"
                 if target_found == True:
                     matrix[y][x] = "."
                     target_found = False
@@ -247,20 +247,20 @@ def movePlayer(direction, myLevel):
                     matrix[y][x] = " "
 
         # if is_box_on_target
-        elif matrix[y+1][x] == "*":
+        elif matrix[y + 1][x] == "*":
             print("Box on target Found")
-            if matrix[y+2][x] == " ":
-                matrix[y+2][x] = "$"
-                matrix[y+1][x] = "@"
+            if matrix[y + 2][x] == " ":
+                matrix[y + 2][x] = "$"
+                matrix[y + 1][x] = "@"
                 if target_found == True:
                     matrix[y][x] = "."
                 else:
                     matrix[y][x] = " "
                 target_found = True
 
-            elif matrix[y+2][x] == ".":
-                matrix[y+2][x] = "*"
-                matrix[y+1][x] = "@"
+            elif matrix[y + 2][x] == ".":
+                matrix[y + 2][x] = "*"
+                matrix[y + 1][x] = "@"
                 if target_found == True:
                     matrix[y][x] = "."
                 else:
@@ -268,9 +268,9 @@ def movePlayer(direction, myLevel):
                 target_found = True
 
         # if is_target
-        elif matrix[y+1][x] == ".":
+        elif matrix[y + 1][x] == ".":
             print("Target Found")
-            matrix[y+1][x] = "@"
+            matrix[y + 1][x] = "@"
             if target_found == True:
                 matrix[y][x] = "."
             else:
@@ -285,9 +285,9 @@ def movePlayer(direction, myLevel):
         print("######### Moving Up #########")
 
         # if is_space
-        if matrix[y-1][x] == " ":
+        if matrix[y - 1][x] == " ":
             print("OK Space Found")
-            matrix[y-1][x] = "@"
+            matrix[y - 1][x] = "@"
             if target_found == True:
                 matrix[y][x] = "."
                 target_found = False
@@ -295,20 +295,20 @@ def movePlayer(direction, myLevel):
                 matrix[y][x] = " "
 
         # if is_box
-        elif matrix[y-1][x] == "$":
+        elif matrix[y - 1][x] == "$":
             print("Box Found")
-            if matrix[y-2][x] == " ":
-                matrix[y-2][x] = "$"
-                matrix[y-1][x] = "@"
+            if matrix[y - 2][x] == " ":
+                matrix[y - 2][x] = "$"
+                matrix[y - 1][x] = "@"
                 if target_found == True:
                     matrix[y][x] = "."
                     target_found = False
                 else:
                     matrix[y][x] = " "
 
-            elif matrix[y-2][x] == ".":
-                matrix[y-2][x] = "*"
-                matrix[y-1][x] = "@"
+            elif matrix[y - 2][x] == ".":
+                matrix[y - 2][x] = "*"
+                matrix[y - 1][x] = "@"
                 if target_found == True:
                     matrix[y][x] = "."
                     target_found = False
@@ -316,20 +316,20 @@ def movePlayer(direction, myLevel):
                     matrix[y][x] = " "
 
         # if is_box_on_target
-        elif matrix[y-1][x] == "*":
+        elif matrix[y - 1][x] == "*":
             print("Box on target Found")
-            if matrix[y-2][x] == " ":
-                matrix[y-2][x] = "$"
-                matrix[y-1][x] = "@"
+            if matrix[y - 2][x] == " ":
+                matrix[y - 2][x] = "$"
+                matrix[y - 1][x] = "@"
                 if target_found == True:
                     matrix[y][x] = "."
                 else:
                     matrix[y][x] = " "
                 target_found = True
 
-            elif matrix[y-2][x] == ".":
-                matrix[y-2][x] = "*"
-                matrix[y-1][x] = "@"
+            elif matrix[y - 2][x] == ".":
+                matrix[y - 2][x] = "*"
+                matrix[y - 1][x] = "@"
                 if target_found == True:
                     matrix[y][x] = "."
                 else:
@@ -337,9 +337,9 @@ def movePlayer(direction, myLevel):
                 target_found = True
 
         # if is_target
-        elif matrix[y-1][x] == ".":
+        elif matrix[y - 1][x] == ".":
             print("Target Found")
-            matrix[y-1][x] = "@"
+            matrix[y - 1][x] = "@"
             if target_found == True:
                 matrix[y][x] = "."
             else:
@@ -356,6 +356,7 @@ def movePlayer(direction, myLevel):
 
     if len(myLevel.getBoxes()) == 0:
         nextLevel()
+
 
 def moveFiveSteps(direction, myLevel):
     for i in range(5):
@@ -377,14 +378,13 @@ def nextLevel(skip=0):
         print("Skipping the level")
     global current_level
     current_level += 1
-    initLevel(level_set,current_level)
-    
+    initLevel(level_set, current_level)
 
 
-def initLevel(level_set,level):
+def initLevel(level_set, level):
     # Create an instance of this Level
     global myLevel
-    myLevel = Level(level_set,level)
+    myLevel = Level(level_set, level)
 
     # Draw this level
     drawLevel(myLevel.getMatrix())
@@ -393,6 +393,7 @@ def initLevel(level_set,level):
     target_found = False
 
     return myLevel
+
 
 def savegame(current_level):
     """screenshot
@@ -405,6 +406,7 @@ def savegame(current_level):
     print("Saving game")
     with open(fileName, "wb") as f:
         pickle.dump(myLevel, f)
+
 
 # Create the environment
 myEnvironment = Environment()
@@ -419,31 +421,33 @@ level_set = "original"
 current_level = 11
 
 # Initialize Level
-myLevel = initLevel(level_set,current_level)
+myLevel = initLevel(level_set, current_level)
 
 target_found = False
 
-smap = SokoMap.SokoMap()
-smap.readMap(os.path.dirname(os.path.abspath(__file__)) + '/levels/' + level_set + '/level' + str(current_level),)
-solution = IDAstar(smap, heuristic)
-if solution is not None:
-    solution.printMap()
-    print(solution.getMoveList())
 
-    for i in solution.getMoveList():
-        time.sleep(0.10)
+def solve():
+    smap = SokoMap.SokoMap()
+    smap.readMap(os.path.dirname(os.path.abspath(__file__)) + '/levels/' + level_set + '/level' + str(current_level), )
+    solution = IDAstar(smap, heuristic)
+    if solution is not None:
+        solution.printMap()
+        print(solution.getMoveList())
 
-        if i == (1, 0):
-            movePlayer("R", myLevel)
+        for i in solution.getMoveList():
+            time.sleep(0.10)
 
-        if i == (0, 1):
-            movePlayer("D", myLevel)
+            if i == (1, 0):
+                movePlayer("R", myLevel)
 
-        if i == (-1, 0):
-            movePlayer("L", myLevel)
+            if i == (0, 1):
+                movePlayer("D", myLevel)
 
-        if i == (0, -1):
-            movePlayer("U", myLevel)
+            if i == (-1, 0):
+                movePlayer("L", myLevel)
+
+            if i == (0, -1):
+                movePlayer("U", myLevel)
 
 
 while True:
