@@ -409,21 +409,76 @@ def savegame(current_level):
 
 
 # Create the environment
-myEnvironment = Environment()
 
 # Choose a theme
 theme = "soft"
 
 # Choose a level set
-level_set = "original"
+level_set = "willy_testmaps"
 
 # Set the start Level
-current_level = 13
+current_level = 2
 
-# Initialize Level
-myLevel = initLevel(level_set, current_level)
+def draw_level_in_pygame():
+    # Initialize Level
+    global myEnvironment
+    myEnvironment = Environment()
+
+    global myLevel
+    myLevel = initLevel(level_set, current_level)
 
 target_found = False
+
+async def pygameEventLoop():
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_LEFT:
+                    if pygame.key.get_mods() and pygame.KMOD_LSHIFT:
+                        moveFiveSteps("L", myLevel)
+                    else:
+                        movePlayer("L", myLevel)
+
+                elif event.key == pygame.K_RIGHT:
+                    if pygame.key.get_mods() and pygame.KMOD_LSHIFT:
+                        moveFiveSteps("R", myLevel)
+                    else:
+                        movePlayer("R", myLevel)
+
+                elif event.key == pygame.K_DOWN:
+                    if pygame.key.get_mods() and pygame.KMOD_LSHIFT:
+                        moveFiveSteps("D", myLevel)
+                    else:
+                        movePlayer("D", myLevel)
+
+                elif event.key == pygame.K_UP:
+                    if pygame.key.get_mods() and pygame.KMOD_LSHIFT:
+                        moveFiveSteps("U", myLevel)
+                    else:
+                        movePlayer("U", myLevel)
+
+                elif event.key == pygame.K_u:
+                    if pygame.key.get_mods() and pygame.KMOD_LSHIFT:
+                        drawLevel(myLevel.getLastMatrix(5))
+                    else:
+                        drawLevel(myLevel.getLastMatrix())
+                elif event.key == pygame.K_r:
+                    initLevel(level_set,current_level)
+                elif event.key == pygame.K_s and pygame.key.get_mods() & pygame.KMOD_SHIFT:
+                    myEnvironment.saveScreen(current_level)
+                elif event.key == pygame.K_w and pygame.key.get_mods() & pygame.KMOD_SHIFT:
+                    savegame(current_level)
+                elif event.key == pygame.K_n and pygame.key.get_mods() & pygame.KMOD_SHIFT:
+                    print (f"Going to level {current_level}")
+                    nextLevel(skip=True)
+
+                elif event.key == pygame.K_ESCAPE:
+                    pygame.quit()
+                    sys.exit()
+
+            elif event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
 
 
 def solve():
@@ -431,71 +486,33 @@ def solve():
     smap.readMap(os.path.dirname(os.path.abspath(__file__)) + '/levels/' + level_set + '/level' + str(current_level), )
     solution = IDAstar(smap, heuristic)
     if solution is not None:
-        solution.printMap()
-        print(solution.getMoveList())
-
-        for i in solution.getMoveList():
-            time.sleep(0.10)
-
-            if i == (1, 0):
-                movePlayer("R", myLevel)
-
-            if i == (0, 1):
-                movePlayer("D", myLevel)
-
-            if i == (-1, 0):
-                movePlayer("L", myLevel)
-
-            if i == (0, -1):
-                movePlayer("U", myLevel)
+        draw_level_in_pygame()
+        pygameEventLoop()
+        draw_moves(solution)
 
 
-while True:
-    for event in pygame.event.get():
-        if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_LEFT:
-                if pygame.key.get_mods() and pygame.KMOD_LSHIFT:
-                    moveFiveSteps("L", myLevel)
-                else:
-                    movePlayer("L", myLevel)
+def draw_moves(solution):
+    solution.printMap()
+    print(solution.getMoveList())
 
-            elif event.key == pygame.K_RIGHT:
-                if pygame.key.get_mods() and pygame.KMOD_LSHIFT:
-                    moveFiveSteps("R", myLevel)
-                else:
-                    movePlayer("R", myLevel)
 
-            elif event.key == pygame.K_DOWN:
-                if pygame.key.get_mods() and pygame.KMOD_LSHIFT:
-                    moveFiveSteps("D", myLevel)
-                else:
-                    movePlayer("D", myLevel)
+    for i in solution.getMoveList():
+        time.sleep(0.10)
 
-            elif event.key == pygame.K_UP:
-                if pygame.key.get_mods() and pygame.KMOD_LSHIFT:
-                    moveFiveSteps("U", myLevel)
-                else:
-                    movePlayer("U", myLevel)
+        if i == (1, 0):
+            movePlayer("R", myLevel)
 
-            elif event.key == pygame.K_u:
-                if pygame.key.get_mods() and pygame.KMOD_LSHIFT:
-                    drawLevel(myLevel.getLastMatrix(5))
-                else:
-                    drawLevel(myLevel.getLastMatrix())
-            elif event.key == pygame.K_r:
-                initLevel(level_set,current_level)
-            elif event.key == pygame.K_s and pygame.key.get_mods() & pygame.KMOD_SHIFT:
-                myEnvironment.saveScreen(current_level)
-            elif event.key == pygame.K_w and pygame.key.get_mods() & pygame.KMOD_SHIFT:
-                savegame(current_level)
-            elif event.key == pygame.K_n and pygame.key.get_mods() & pygame.KMOD_SHIFT:
-                print (f"Going to level {current_level}")
-                nextLevel(skip=True)
+        if i == (0, 1):
+            movePlayer("D", myLevel)
 
-            elif event.key == pygame.K_ESCAPE:
-                pygame.quit()
-                sys.exit()
+        if i == (-1, 0):
+            movePlayer("L", myLevel)
 
-        elif event.type == pygame.QUIT:
-            pygame.quit()
-            sys.exit()
+        if i == (0, -1):
+            movePlayer("U", myLevel)
+
+
+solve()
+
+
+

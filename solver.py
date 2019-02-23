@@ -1,6 +1,8 @@
 #solve sokoban
 
 import sys, time
+from typing import Tuple, List
+
 import SokoMap, HashTable
 import os
 
@@ -68,17 +70,17 @@ def isClosed(closedSet, x):
     return False
 
 
-def IDAstar(sm, h):
+def IDAstar(sm, heuristic) -> [(int, int)]:
     MAXNODES = 20000000
     openSet = []
     closedSet = []
     visitSet = []
-    pathLimit = h(sm) - 1
+    pathLimit = heuristic(sm) - 1
     sucess = False
     it = 0
 
     while True:
-        pathLimit = pathLimit + 1
+        pathLimit += 1
         print("current pathLimit = ", pathLimit)
         sm.setG(0)
         openSet.insert(0, sm)
@@ -113,7 +115,7 @@ def IDAstar(sm, h):
 
                     # compute G for each
                     x.setG(currentState.getG() + 1)
-                    x.setF(x.getG()+ h(x))
+                    x.setF(x.getG() + heuristic(x))
                     #x.setParent(currentState)
                     openSet.insert(0, x) # push
             else:
