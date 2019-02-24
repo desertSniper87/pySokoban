@@ -3,6 +3,7 @@
 # Author: Kazantzakis Nikos <kazantzakisnikos@gmail.com>
 # Date: 2015
 # Last Modified: 31-03-2016
+import asyncio
 import datetime
 import os
 import pickle
@@ -71,15 +72,15 @@ def movePlayer(direction, myLevel):
     global target_found
 
     # print boxes
-    print(myLevel.getBoxes())
+    # print(myLevel.getBoxes())
 
     if direction == "L":
-        print("######### Moving Left #########")
+        # print("######### Moving Left #########")
 
         # if is_space
 
         if matrix[y][x - 1] == " ":
-            print("OK Space Found")
+            # print("OK Space Found")
             matrix[y][x - 1] = "@"
             if target_found == True:
                 matrix[y][x] = "."
@@ -89,7 +90,7 @@ def movePlayer(direction, myLevel):
 
         # if is_box
         elif matrix[y][x - 1] == "$":
-            print("Box Found")
+            # print("Box Found")
             if matrix[y][x - 2] == " ":
                 matrix[y][x - 2] = "$"
                 matrix[y][x - 1] = "@"
@@ -110,7 +111,8 @@ def movePlayer(direction, myLevel):
 
         # if is_box_on_target
         elif matrix[y][x - 1] == "*":
-            print("Box on target Found")
+            #
+            # ("Box on target Found")
             if matrix[y][x - 2] == " ":
                 matrix[y][x - 2] = "$"
                 matrix[y][x - 1] = "@"
@@ -131,7 +133,7 @@ def movePlayer(direction, myLevel):
 
         # if is_target
         elif matrix[y][x - 1] == ".":
-            print("Target Found")
+            # print("Target Found")
             matrix[y][x - 1] = "@"
             if target_found == True:
                 matrix[y][x] = "."
@@ -144,11 +146,11 @@ def movePlayer(direction, myLevel):
             print("There is a wall here")
 
     elif direction == "R":
-        print("######### Moving Right #########")
+        # print("######### Moving Right #########")
 
         # if is_space
         if matrix[y][x + 1] == " ":
-            print("OK Space Found")
+            # print("OK Space Found")
             matrix[y][x + 1] = "@"
             if target_found == True:
                 matrix[y][x] = "."
@@ -158,7 +160,7 @@ def movePlayer(direction, myLevel):
 
         # if is_box
         elif matrix[y][x + 1] == "$":
-            print("Box Found")
+            # print("Box Found")
             if matrix[y][x + 2] == " ":
                 matrix[y][x + 2] = "$"
                 matrix[y][x + 1] = "@"
@@ -179,7 +181,7 @@ def movePlayer(direction, myLevel):
 
         # if is_box_on_target
         elif matrix[y][x + 1] == "*":
-            print("Box on target Found")
+            # print("Box on target Found")
             if matrix[y][x + 2] == " ":
                 matrix[y][x + 2] = "$"
                 matrix[y][x + 1] = "@"
@@ -200,7 +202,7 @@ def movePlayer(direction, myLevel):
 
         # if is_target
         elif matrix[y][x + 1] == ".":
-            print("Target Found")
+            # print("Target Found")
             matrix[y][x + 1] = "@"
             if target_found == True:
                 matrix[y][x] = "."
@@ -208,16 +210,15 @@ def movePlayer(direction, myLevel):
                 matrix[y][x] = " "
             target_found = True
 
-        # else
         else:
             print("There is a wall here")
 
     elif direction == "D":
-        print("######### Moving Down #########")
+        # print("######### Moving Down #########")
 
         # if is_space
         if matrix[y + 1][x] == " ":
-            print("OK Space Found")
+            # print("OK Space Found")
             matrix[y + 1][x] = "@"
             if target_found == True:
                 matrix[y][x] = "."
@@ -227,7 +228,7 @@ def movePlayer(direction, myLevel):
 
         # if is_box
         elif matrix[y + 1][x] == "$":
-            print("Box Found")
+            # print("Box Found")
             if matrix[y + 2][x] == " ":
                 matrix[y + 2][x] = "$"
                 matrix[y + 1][x] = "@"
@@ -248,7 +249,7 @@ def movePlayer(direction, myLevel):
 
         # if is_box_on_target
         elif matrix[y + 1][x] == "*":
-            print("Box on target Found")
+            # print("Box on target Found")
             if matrix[y + 2][x] == " ":
                 matrix[y + 2][x] = "$"
                 matrix[y + 1][x] = "@"
@@ -269,7 +270,7 @@ def movePlayer(direction, myLevel):
 
         # if is_target
         elif matrix[y + 1][x] == ".":
-            print("Target Found")
+            # print("Target Found")
             matrix[y + 1][x] = "@"
             if target_found == True:
                 matrix[y][x] = "."
@@ -282,11 +283,11 @@ def movePlayer(direction, myLevel):
             print("There is a wall here")
 
     elif direction == "U":
-        print("######### Moving Up #########")
+        # print("######### Moving Up #########")
 
         # if is_space
         if matrix[y - 1][x] == " ":
-            print("OK Space Found")
+            # print("OK Space Found")
             matrix[y - 1][x] = "@"
             if target_found == True:
                 matrix[y][x] = "."
@@ -296,7 +297,7 @@ def movePlayer(direction, myLevel):
 
         # if is_box
         elif matrix[y - 1][x] == "$":
-            print("Box Found")
+            # print("Box Found")
             if matrix[y - 2][x] == " ":
                 matrix[y - 2][x] = "$"
                 matrix[y - 1][x] = "@"
@@ -317,7 +318,7 @@ def movePlayer(direction, myLevel):
 
         # if is_box_on_target
         elif matrix[y - 1][x] == "*":
-            print("Box on target Found")
+            # print("Box on target Found")
             if matrix[y - 2][x] == " ":
                 matrix[y - 2][x] = "$"
                 matrix[y - 1][x] = "@"
@@ -338,7 +339,7 @@ def movePlayer(direction, myLevel):
 
         # if is_target
         elif matrix[y - 1][x] == ".":
-            print("Target Found")
+            # print("Target Found")
             matrix[y - 1][x] = "@"
             if target_found == True:
                 matrix[y][x] = "."
@@ -352,7 +353,7 @@ def movePlayer(direction, myLevel):
 
     drawLevel(matrix)
 
-    print("Boxes remaining: " + str(len(myLevel.getBoxes())))
+    # print("Boxes remaining: " + str(len(myLevel.getBoxes())))
 
     if len(myLevel.getBoxes()) == 0:
         nextLevel()
@@ -482,9 +483,9 @@ async def pygameEventLoop():
 
 
 def solve():
-    smap = SokoMap.SokoMap()
-    smap.readMap(os.path.dirname(os.path.abspath(__file__)) + '/levels/' + level_set + '/level' + str(current_level), )
-    solution = IDAstar(smap, heuristic)
+    sokomap = SokoMap.SokoMap()
+    sokomap.readMap(os.path.dirname(os.path.abspath(__file__)) + '/levels/' + level_set + '/level' + str(current_level), )
+    solution = IDAstar(sokomap, heuristic)
     if solution is not None:
         draw_level_in_pygame()
         pygameEventLoop()
@@ -497,7 +498,7 @@ def draw_moves(solution):
 
 
     for i in solution.getMoveList():
-        time.sleep(0.10)
+        time.sleep(0.90)
 
         if i == (1, 0):
             movePlayer("R", myLevel)
@@ -512,7 +513,62 @@ def draw_moves(solution):
             movePlayer("U", myLevel)
 
 
+
+def play():
+    draw_level_in_pygame()
+
+    while True:
+        for event in pygame.event.get():
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_LEFT:
+                    if pygame.key.get_mods() and pygame.KMOD_LSHIFT:
+                        moveFiveSteps("L", myLevel)
+                    else:
+                        movePlayer("L", myLevel)
+
+                elif event.key == pygame.K_RIGHT:
+                    if pygame.key.get_mods() and pygame.KMOD_LSHIFT:
+                        moveFiveSteps("R", myLevel)
+                    else:
+                        movePlayer("R", myLevel)
+
+                elif event.key == pygame.K_DOWN:
+                    if pygame.key.get_mods() and pygame.KMOD_LSHIFT:
+                        moveFiveSteps("D", myLevel)
+                    else:
+                        movePlayer("D", myLevel)
+
+                elif event.key == pygame.K_UP:
+                    if pygame.key.get_mods() and pygame.KMOD_LSHIFT:
+                        moveFiveSteps("U", myLevel)
+                    else:
+                        movePlayer("U", myLevel)
+
+                elif event.key == pygame.K_u:
+                    if pygame.key.get_mods() and pygame.KMOD_LSHIFT:
+                        drawLevel(myLevel.getLastMatrix(5))
+                    else:
+                        drawLevel(myLevel.getLastMatrix())
+                elif event.key == pygame.K_r:
+                    initLevel(level_set,current_level)
+                elif event.key == pygame.K_s and pygame.key.get_mods() & pygame.KMOD_SHIFT:
+                    myEnvironment.saveScreen(current_level)
+                elif event.key == pygame.K_w and pygame.key.get_mods() & pygame.KMOD_SHIFT:
+                    savegame(current_level)
+                elif event.key == pygame.K_n and pygame.key.get_mods() & pygame.KMOD_SHIFT:
+                    print (f"Going to level {current_level}")
+                    nextLevel(skip=True)
+
+                elif event.key == pygame.K_ESCAPE:
+                    pygame.quit()
+                    sys.exit()
+
+            elif event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+
+
+
+
 solve()
-
-
-
+# play()

@@ -10,12 +10,12 @@ import os
 def manDistance(a, b):
     return abs(a[0]-b[0]) + abs(a[1]-b[1])
 
-def heuristic(sm):
+def heuristic(sokomap):
     # generate all possible combinations of goals for each block
     solutions = []
-    for b in sm.getBlocks():
+    for b in sokomap.getBlocks():
         solution = []
-        for g in sm.getGoals():
+        for g in sokomap.getGoals():
             sol = (b, g, manDistance(b,g))
             solution.append(sol)
         solutions.append(solution)
@@ -51,10 +51,10 @@ def heuristic(sm):
     # print result
     # print best
 
-    w = sm.getPlayer()
+    w = sokomap.getPlayer()
     d = sys.maxsize
     v = (-1,-1)
-    for x in sm.getUnplacedBlocks():
+    for x in sokomap.getUnplacedBlocks():
         if manDistance(w, x) < d:
             d = manDistance(w, x)
             v = x
@@ -70,20 +70,20 @@ def isClosed(closedSet, x):
     return False
 
 
-def IDAstar(sm, heuristic) -> [(int, int)]:
+def IDAstar(sokomap, heuristic) -> [(int, int)]:
     MAXNODES = 20000000
     openSet = []
     closedSet = []
     visitSet = []
-    pathLimit = heuristic(sm) - 1
+    pathLimit = heuristic(sokomap) - 1
     sucess = False
     it = 0
 
     while True:
         pathLimit += 1
         print("current pathLimit = ", pathLimit)
-        sm.setG(0)
-        openSet.insert(0, sm)
+        sokomap.setG(0)
+        openSet.insert(0, sokomap)
         ht = HashTable.HashTable()
         nodes = 0
 
