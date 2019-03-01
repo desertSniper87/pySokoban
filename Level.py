@@ -11,8 +11,10 @@ class Level:
         del self.matrix[:]
         del self.matrix_history[:]
 
+        fileName = os.path.dirname(os.path.abspath(__file__)) + '/levels/' + set + '/level' + str(level_num)
+
         # Create level
-        with open(os.path.dirname(os.path.abspath(__file__)) + '/levels/' + set + '/level' + str(level_num), 'r') as f:
+        with open(fileName, 'r') as f:
             for row in f.read().splitlines():
                 self.matrix.append(list(row))
 

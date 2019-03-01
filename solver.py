@@ -6,19 +6,37 @@ from typing import Tuple, List
 import SokoMap, HashTable
 import os
 
+from settings import DEV_DEBUG
+
+DIRECTION_DICT = {
+    (1, 0): "Right",
+    (0, 1): "Down",
+    (-1, 0): "Left",
+    (0, -1): "Up"
+}
+
+def getFormattedMoves(moveList) -> str:
+    if len(moveList) == 0:
+        return "Empty."
+    else:
+        stringMoveList = [DIRECTION_DICT[d] for d in moveList]
+        return ' '.join(x for x in stringMoveList)
+
+
+
 # Manhattan Distance between two points
-def manDistance(a, b):
+def manhattanDistance(a, b):
     return abs(a[0]-b[0]) + abs(a[1]-b[1])
 
 def heuristic(sokomap):
     # generate all possible combinations of goals for each block
     solutions = []
-    for b in sokomap.getBlocks():
-        solution = []
-        for g in sokomap.getGoals():
-            sol = (b, g, manDistance(b,g))
-            solution.append(sol)
-        solutions.append(solution)
+    for block in sokomap.getBlocks():
+        usedSolution = []
+        for goal in sokomap.getGoals():
+            sol = (block, goal, manhattanDistance(block, goal))
+            usedSolution.append(sol)
+        solutions.append(usedSolution)
 
     # for sol in solutions:
     #     print sol
@@ -29,37 +47,39 @@ def heuristic(sokomap):
     for s in solutions[0]:
         usedGoal = []
         usedBlock = []
-        solution = []
+        usedSolution = []
 
         usedGoal.append(s[1])
         usedBlock.append(s[0])
-        solution.append(s)
-        h = s[2]
-        for lin in solutions:
-            for col in lin:
-                if col[1] not in usedGoal and col[0] not in usedBlock:
-                    solution.append(col)
+        usedSolution.append(s)
+        manhttnGoalBlock = s[2]
+        for solution in solutions:
+            for col in solution:
+                goal = col[1]
+                block = col[0]
+                if goal not in usedGoal and block not in usedBlock:
+                    usedSolution.append(col)
                     usedGoal.append(col[1])
                     usedBlock.append(col[0])
-                    h = h + col[2]
+                    manhttnGoalBlock = manhttnGoalBlock + col[2]
                     break
-        if h < best:
-            best = h
-            result = solution
+        if manhttnGoalBlock < best:
+            best = manhttnGoalBlock
+            result = usedSolution
 
     # print "-------"
     # print result
     # print best
 
-    w = sokomap.getPlayer()
-    d = sys.maxsize
+    player = sokomap.getPlayer()
+    currentEstimate = sys.maxsize
     v = (-1,-1)
-    for x in sokomap.getUnplacedBlocks():
-        if manDistance(w, x) < d:
-            d = manDistance(w, x)
-            v = x
+    for block in sokomap.getUnplacedBlocks():
+        if manhattanDistance(player, block) < currentEstimate:
+            currentEstimate = manhattanDistance(player, block)
+            v = block
     if v is not (-1,-1):
-        best = best + d
+        best = best + currentEstimate
 
     return best
 
@@ -72,11 +92,10 @@ def isClosed(closedSet, x):
 
 def IDAstar(sokomap, heuristic) -> [(int, int)]:
     MAXNODES = 20000000
-    openSet = []
-    closedSet = []
-    visitSet = []
+    openSet: [sokomap] = []
+    closedSet: [sokomap] = []
+    visitSet: [sokomap] = []
     pathLimit = heuristic(sokomap) - 1
-    sucess = False
     it = 0
 
     while True:
@@ -89,7 +108,11 @@ def IDAstar(sokomap, heuristic) -> [(int, int)]:
 
         while len(openSet) > 0:
             currentState = openSet.pop(0)
-            #currentState.printMap()
+            if DEV_DEBUG:
+                currentState.printMap()
+                moveList = currentState.getMoveList()
+                print(f'"openSet.pop(0)" movelist={getFormattedMoves(moveList)}')
+
 
             nodes = nodes + 1
             if currentState.isSolution():
@@ -104,20 +127,26 @@ def IDAstar(sokomap, heuristic) -> [(int, int)]:
             if currentState.getF() <= pathLimit:
                 closedSet.insert(0, currentState)
                 # get the sucessors of the current state
-                for x in currentState.children():
+                children = currentState.getChildren()
+                for child in children:
                     # test if node has been "closed"
-                    if isClosed(closedSet,x):
+                    if isClosed(closedSet,child):
                         continue
 
                     # check if this has already been generated
-                    if ht.checkAdd(x):
+                    if ht.checkAdd(child):
+                        if DEV_DEBUG:
+                            print(f'We have already gone this way.')
                         continue
 
                     # compute G for each
-                    x.setG(currentState.getG() + 1)
-                    x.setF(x.getG() + heuristic(x))
+                    child.setG(currentState.getG() + 1)
+                    child.setF(child.getG() + heuristic(child))
                     #x.setParent(currentState)
-                    openSet.insert(0, x) # push
+
+                    if DEV_DEBUG:
+                        print(f'Moving.')
+                    openSet.insert(0, child) # push
             else:
                 visitSet.insert(0, currentState)
 
@@ -130,9 +159,9 @@ def IDAstar(sokomap, heuristic) -> [(int, int)]:
 
         # set a new cut-off value (pathLimit)
         low = visitSet[0].getF()
-        for x in visitSet:
-            if x.getF() < low:
-                low = x.getF()
+        for child in visitSet:
+            if child.getF() < low:
+                low = child.getF()
         pathLimit = low
 
         # move nodes from VISIT to OPEN and reset closedSet

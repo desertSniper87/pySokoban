@@ -5,9 +5,8 @@ class HashTable:
     def __init__(self):
         self.table = {}
 
-    # sm is SokoMap
-    def checkAdd(self, sm):
-        key = str(sm.getBlocks() + [sm.getPlayer()])
+    def checkAdd(self, sokomap):
+        key = str(sokomap.getBlocks() + [sokomap.getPlayer()])
         if key in self.table:
             return True
         else:

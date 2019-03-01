@@ -15,7 +15,10 @@ import sys
 import SokoMap
 from Environment import Environment
 from Level import Level
-from solver import IDAstar, heuristic, depth_first_search__scan
+from solver import IDAstar, heuristic, depth_first_search__scan, getFormattedMoves
+
+
+from settings import DEV_DEBUG
 
 
 def drawLevel(matrix_to_draw):
@@ -415,10 +418,10 @@ def savegame(current_level):
 theme = "soft"
 
 # Choose a level set
-level_set = "willy_testmaps"
+level_set = "original"
 
 # Set the start Level
-current_level = 2
+current_level = 1
 
 def draw_level_in_pygame():
     # Initialize Level
@@ -495,6 +498,7 @@ def solve():
 def draw_moves(solution):
     solution.printMap()
     print(solution.getMoveList())
+    getFormattedMoves(solution.getMoveList())
 
 
     for i in solution.getMoveList():

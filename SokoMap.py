@@ -1,6 +1,13 @@
 import sys
 from copy import deepcopy
 
+from typing import TypeVar
+SokoMap = TypeVar('SokoMap')
+
+from solver import DIRECTION_DICT
+
+from settings import DEV_DEBUG
+
 class SokoMap:
     TILE_BLOCK = '$'
     TILE_GOAL = '.'
@@ -18,7 +25,7 @@ class SokoMap:
     TILES_SPACEY = frozenset([TILE_SPACE, TILE_DEADLOCK])
 
     def __init__(self):
-        self.sokomap = []
+        self.sokomap = [] # Todo: Write a getter
 
         self.gVal = 0
         self.fVal = 0
@@ -31,9 +38,9 @@ class SokoMap:
             return (self.sokomap == other.sokomap and self.player == other.player)
         return NotImplemented
 
-    def setMap(self, m, xxx_todo_changeme5):
-        (x,y) = xxx_todo_changeme5
-        self.sokomap = m
+    def setPlayerOnMap(self, map, playerPosition):
+        (x,y) = playerPosition
+        self.sokomap = map
         self.player = (x,y)
 
     def setG(self, val):
@@ -80,20 +87,30 @@ class SokoMap:
              # remove last "line" (empty, original only had a newline)
             SokoMap.pop()
 
-        self.setMap(SokoMap, player)
+        self.setPlayerOnMap(SokoMap, player)
 
     def getMap(self):
         return self.sokomap
 
-    def printMap(self):
+    def printMap(self, playerPosition=None):
         #y = len(self.sm)
         #x = len(self.sm[0])
 
-        for line in self.sokomap:
+        if playerPosition:
+            (playerX, playerY) = playerPosition
+        else:
+            (playerX, playerY) = self.getPlayer()
+
+        sokomap = deepcopy(self.sokomap)
+        sokomap[playerY][playerX] = '@'
+
+        for line in sokomap:
             print(''.join (x for x in line))
             # for c in line:
             #     print c,
             # print
+
+        print(f'player_position={self.getPlayer()}')
 
     def getPositionOfBlock(self, block):
         result = []
@@ -141,7 +158,7 @@ class SokoMap:
     #         simpleMap[x[1]][x[0]] = self.TILE_SPACE
     #
     #     m = SokoMap()
-    #     m.setMap(simpleMap)
+    #     m.setPlayerOnMap(simpleMap)
     #     return m
 
     def isLegal(self, nplayer):
@@ -254,79 +271,92 @@ class SokoMap:
         return self.moveList
 
 
-    def move(self, nplayer):
-        (x,y) = self.getPlayer()
-        nMap = deepcopy(self.sokomap)
+    def move(self, target) -> SokoMap:
+        (currentX,currentY) = self.getPlayer()
+        map = deepcopy(self.sokomap)
         box = None
 
         # transform the new location of the player
 
-        (nx,ny) = nplayer
-        xdiff = nx - x
-        ydiff = ny - y
-        m = (xdiff, ydiff)
+        (targetX, targetY) = target
+        xdiff = targetX - currentX
+        ydiff = targetY - currentY
+        move = (xdiff, ydiff)
         carry = False
-        if nMap[ny][nx] == self.TILE_BLOCK:
+        if map[targetY][targetX] == self.TILE_BLOCK:
             carry = True
-            nMap[ny][nx] = self.TILE_SPACE
-        elif nMap[ny][nx] == self.TILE_BLOCK_ON_GOAL:
+            map[targetY][targetX] = self.TILE_SPACE
+        elif map[targetY][targetX] == self.TILE_BLOCK_ON_GOAL:
             carry = True
-            nMap[ny][nx] = self.TILE_GOAL
+            map[targetY][targetX] = self.TILE_GOAL
 
         # push a block into a new space if necessary
         if carry:
-            bx = nx + xdiff
-            by = ny + ydiff
+            bx = targetX + xdiff
+            by = targetY + ydiff
 
-            box = self.tunnelMacro(nMap, (bx, by), m)
-            #box = None
+            # box = self.tunnelMacro(map, (bx, by), move)
+            box = None
             if box is not None:
-                # print "TUNNEL"
-                #  self.printMap()
-                #  print "-------"
-                # print "Tunnel From ", (bx, by), " to ", box
+                if DEV_DEBUG:
+                    print ("TUNNEL")
+                    self.printMap()
+                    print("-------")
+                    print("Tunnel From ", (bx, by), " to ", box)
+
                 (bx, by) = box
 
-                nx = bx - xdiff
-                ny = by - ydiff
+                targetX = bx - xdiff
+                targetY = by - ydiff
                 # it must be a space (that's checked inside tunnelMacro)
 
-                nMap[ny][nx] = self.TILE_SPACE
+                map[targetY][targetX] = self.TILE_SPACE
 
-            # print ""
-            # print bx,by
-            # for line in nMap:
-            #     print line
+            # print ("")
+            # print (bx,by)
+            # for line in map:
+            #     print (line)
 
             # Place the box
-            if nMap[by][bx] == self.TILE_SPACE:
-                nMap[by][bx] = self.TILE_BLOCK
-            elif nMap[by][bx] == self.TILE_GOAL:
-                nMap[by][bx] = self.TILE_BLOCK_ON_GOAL
+            if map[by][bx] == self.TILE_SPACE:
+                map[by][bx] = self.TILE_BLOCK
+            elif map[by][bx] == self.TILE_GOAL:
+                map[by][bx] = self.TILE_BLOCK_ON_GOAL
             else:
-                print("WTF2=", nMap[by][bx])
+                print("WTF2=", map[by][bx])
 
 
         nSokoMap = SokoMap()
-        nSokoMap.setMap(nMap, (nx, ny))
+        nSokoMap.setPlayerOnMap(map, (targetX, targetY))
         nSokoMap.setMoveList(self.getMoveList())
-        nSokoMap.addMove(m)
+
+        if DEV_DEBUG and box:
+            print(f'Adding tunnel move {DIRECTION_DICT.get(move)}')
+
+        nSokoMap.addMove(move)
 
         # if box is not None:
         #     nSokoMap.printMap()
         return nSokoMap
 
-    def _filter_neighbours(self, xxx_todo_changeme6, offsets, filt):
-        (x,y) = xxx_todo_changeme6
+    def _filter_neighbours(self, player_position: tuple, offsets, filter: callable([object, tuple])):
+        (x,y) = player_position
         for (dx,dy) in offsets:
             nxy = (x+dx,y+dy)
-            if (filt(nxy)):
+            if (filter(nxy)):
                 yield nxy
+                if DEV_DEBUG:
+                    print(f'{DIRECTION_DICT.get((dx, dy))}{nxy} is Legal')
 
-    def children(self):
-        return [self.move(nxy) for nxy in self._filter_neighbours(self.getPlayer(), [(0,-1),(0,1),(-1,0),(1,0)], (lambda nxy: self.isLegal(nxy)))]
+    def getChildren(self):
+        return [self.move(nxy) for nxy in self._filter_neighbours(self.getPlayer(),
+                                                                  [(0,-1),(0,1),(-1,0),(1,0)],
+                                                                  (lambda nxy: self.isLegal(nxy)))]
 
     def getNeighbors(self, node):
+        """Only used in creating influencer tables.
+
+        """
         def filt(xxx_todo_changeme1):
             (nx,ny) = xxx_todo_changeme1
             try:
@@ -337,7 +367,10 @@ class SokoMap:
         return self._filter_neighbours(node, [(1,0),(-1,0),(0,1),(0,-1)], filt)
 
     def shortestPath(self, source, target):
-        """Dijkstra's algorithm from the pseudocode in wikipedia"""
+        """Dijkstra's algorithm from the pseudocode in wikipedia
+
+        Only used in creating influencer tables.
+        """
         dist = {}
         prev = {}
         q = []
