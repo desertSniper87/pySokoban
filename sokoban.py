@@ -418,7 +418,7 @@ def savegame(current_level):
 theme = "soft"
 
 # Choose a level set
-level_set = "original"
+level_set = "willy_testmaps"
 
 # Set the start Level
 current_level = 1

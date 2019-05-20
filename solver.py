@@ -98,6 +98,8 @@ def IDAstar(sokomap, heuristic) -> [(int, int)]:
     pathLimit = heuristic(sokomap) - 1
     it = 0
 
+    sokomap.uniqueBlocksGoals()
+
     while True:
         pathLimit += 1
         print("current pathLimit = ", pathLimit)

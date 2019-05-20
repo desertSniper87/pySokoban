@@ -19,10 +19,39 @@ class SokoMap:
     TILE_DEADLOCK = 'x'
     TILE_PLAYER_ON_DEADLOCK = '+'
 
-    TILES_BLOCKY = frozenset([TILE_BLOCK, TILE_BLOCK_ON_GOAL])
-    TILES_WRONG_FOR_BLOCK = frozenset([TILE_BLOCK, TILE_WALL, TILE_BLOCK_ON_GOAL, TILE_DEADLOCK])
-    TILES_WRONG_FOR_2x2 = frozenset([TILE_BLOCK, TILE_WALL, TILE_BLOCK_ON_GOAL])
+    TILES_WRONG_FOR_BLOCK = frozenset([TILE_WALL, TILE_BLOCK_ON_GOAL, TILE_DEADLOCK]) # And Tile Block
+    TILES_WRONG_FOR_2x2 = frozenset([TILE_WALL, TILE_BLOCK_ON_GOAL]) # And Tile Block
     TILES_SPACEY = frozenset([TILE_SPACE, TILE_DEADLOCK])
+
+    def isTileWrongForBlock(self, tile) -> bool:
+        if self.isTileBlock(tile) or tile in self.TILES_WRONG_FOR_2x2:
+            return True
+        else:
+            return False
+
+    def isTileWrongFor2x2(self, tile) -> bool:
+        if self.isTileBlock(tile) or tile in self.TILES_WRONG_FOR_BLOCK:
+            return True
+        else:
+            return False
+
+    def isTileBlock(self, tile) -> bool:
+        if tile[0] == self.TILE_BLOCK:
+            return True
+        else:
+            return False
+
+    def isTileGoal(self, tile) -> bool:
+        if tile[0] == self.TILE_GOAL:
+            return True
+        else:
+            return False
+
+    def isTileBlocky(self, tile) -> bool:
+        if self.isTileBlock(tile) or tile == self.TILE_BLOCK_ON_GOAL:
+            return True
+        else:
+            return False
 
     def __init__(self):
         self.sokomap = [] # Todo: Write a getter
@@ -32,6 +61,8 @@ class SokoMap:
 
         self.parent = None
         self.moveList = []
+
+        self.hVal = 0
 
     def __eq__(self, other):
         if isinstance(other, SokoMap):
@@ -112,13 +143,15 @@ class SokoMap:
 
         print(f'player_position={self.getPlayer()}')
 
-    def getPositionOfBlock(self, block):
+    def getPositionOfBlock(self, block: str) -> []:
         result = []
         y = 0
         for line in self.sokomap:
             x = 0
             for i in line:
-                if i == block:
+                if i == block or \
+                block == self.TILE_BLOCK and self.isTileBlock(i) == True or\
+                block == self.TILE_GOAL and self.isTileGoal(i) == True:
                     result.append((x,y))
                 x += 1
             y += 1
@@ -161,7 +194,7 @@ class SokoMap:
     #     m.setPlayerOnMap(simpleMap)
     #     return m
 
-    def isLegal(self, nplayer):
+    def isLegal(self, nplayer) -> bool:
         (nx, ny) = nplayer
         (x, y) = self.getPlayer()
 
@@ -174,7 +207,7 @@ class SokoMap:
         if self.sokomap[ny][nx] == self.TILE_WALL:
             return False # cant move into a wall
 
-        if self.sokomap[ny][nx] in self.TILES_BLOCKY:
+        if self.isTileBlocky(self.sokomap[ny][nx]):
             # is trying to push a block
             # the only way this works is if the space after the block is free
             # or a goal so we calculate where the block is going to be pushed
@@ -193,7 +226,7 @@ class SokoMap:
             # print "bx,by=",bx, by
             # print self.sm[by][bx]
 
-            if self.sokomap[by][bx] in self.TILES_WRONG_FOR_BLOCK:
+            if self.isTileWrongForBlock(self.sokomap[by][bx]):
                 return False
 
             min_n_off = (-ydiff,-xdiff)
@@ -203,13 +236,12 @@ class SokoMap:
             #      $$    #$     #$   $$
             #      ##    #$     $$   $$
             #
-            def _my_check(xxx_todo_changeme):
-                ((dy1,dx1),(dy2,dx2)) = xxx_todo_changeme
-                filtered = [self.TILE_BLOCK_ON_GOAL if self.sokomap[by][bx] == self.TILE_GOAL \
-                                             else self.TILE_BLOCK]
+            def _my_check(_dir_offsets):
+                ((dy1,dx1),(dy2,dx2)) = _dir_offsets
+                filtered = [self.TILE_BLOCK_ON_GOAL if self.isTileGoal(self.sokomap[by][bx]) else self.TILE_BLOCK]
                 for (dy,dx) in [(dy1,dx1),(dy2,dx2),(dy1+dy2,dx1+dx2)]:
                     x = self.sokomap[by + dy][bx + dx]
-                    if x in self.TILES_WRONG_FOR_2x2:
+                    if self.isTileWrongFor2x2(x):
                         filtered.append(x)
                 # There are 4 in total
                 return (len(filtered) == 4 and (self.TILE_BLOCK in filtered))
@@ -218,9 +250,9 @@ class SokoMap:
                 if ((y_offset != min_n_off) and (not (y_offset == (-1,0) and by == 0 ))):
                     for x_offset in [(0,-1),(0,1)]:
                         if ((x_offset != min_n_off) and (not (x_offset == -1 and bx == 0 ))):
-                            for dir_offsets in [\
-                                    (x_offset,y_offset), \
-                                    (y_offset,x_offset) \
+                            for dir_offsets in [
+                                    (x_offset,y_offset),
+                                    (y_offset,x_offset)
                                     ]:
                                 if (_my_check(dir_offsets)):
                                     return False
@@ -283,7 +315,8 @@ class SokoMap:
         ydiff = targetY - currentY
         move = (xdiff, ydiff)
         carry = False
-        if map[targetY][targetX] == self.TILE_BLOCK:
+        if self.isTileBlock(map[targetY][targetX]) == True:
+            tileBlock = map[targetY][targetX]
             carry = True
             map[targetY][targetX] = self.TILE_SPACE
         elif map[targetY][targetX] == self.TILE_BLOCK_ON_GOAL:
@@ -319,8 +352,8 @@ class SokoMap:
 
             # Place the box
             if map[by][bx] == self.TILE_SPACE:
-                map[by][bx] = self.TILE_BLOCK
-            elif map[by][bx] == self.TILE_GOAL:
+                map[by][bx] = tileBlock
+            elif self.isTileGoal(map[by][bx]) == True:
                 map[by][bx] = self.TILE_BLOCK_ON_GOAL
             else:
                 print("WTF2=", map[by][bx])
@@ -415,6 +448,23 @@ class SokoMap:
         s.reverse()
 
         return s
+
+    def uniqueBlocksGoals(self):
+        blocki = 0
+        goali = 0
+        for line in self.sokomap:
+            for i, tile in enumerate(line):
+                if tile == self.TILE_BLOCK:
+                    line[i] = self.TILE_BLOCK + str(blocki)
+                    blocki += 1
+                elif tile == self.TILE_GOAL:
+                    line[i] = self.TILE_GOAL + str(goali)
+                    goali += 1
+
+
+        return
+
+
 
 
     def buildInfluenceTable(self):
@@ -633,4 +683,60 @@ class SokoMap:
             (dx,dy) = dead
             connect_markers(dx, dy, xy_v)
             connect_markers(dy, dx, yx_v)
+
+    def buildLowerBoundTable(self) -> None:
+        """ This is a better lower bound estimator (well, routines that implements
+        it). It uses minimum flow, maximum matching to solve which stone goes
+        to which goal without conflicts. If no matching exists - deadlock!
+        called after distances where changed to make sure we get the
+        stones_done * onto their squares """
+
+        # char stonei,goali;
+        # int  taken[MAXSTONES];
+
+        # initialize table with just any matching
+        self.h = 0
+        self.pen = 0
+        self.lowerBoundTable = {}
+        # memset(taken,0,sizeof(int)*maze->number_stones);
+
+        # first get all the done stones in
+        nUnplacedBlocks = len(self.getUnplacedBlocks())
+        self.buildLowerBoundTable()
+        for i in range(nUnplacedBlocks):
+            self.lowerBoundTable
+        # for (stonei=0; stonei<maze->number_stones; stonei++) {
+                # maze->lbtable[(int)stonei].distance = MAXDIST;
+                # if (  IsBitSetBS(maze->stones_done,maze->stones[stonei].loc)
+                    # &&IsBitSetBS(maze->goal,maze->stones[stonei].loc)) {
+                        # /* make sure this guy gets home */
+                        # goali = maze->Phys[maze->stones[stonei].loc].goal;
+                        # maze->lbtable[(int)goali].stoneidx  = stonei;
+                        # maze->lbtable[(int)stonei].goalidx  = goali;
+                        # maze->lbtable[(int)stonei].distance = 0;
+                        # taken[(int)goali] = YES;
+                # }
+        # }
+        # /* now look for any matching for the once not done yet */
+        # for (stonei=0; stonei<maze->number_stones; stonei++) {
+                # if (maze->lbtable[(int)stonei].distance == MAXDIST) {
+                        # for (goali=0; goali<maze->number_goals; goali++) {
+                                # if (taken[(int)goali] == NO) {
+                                        # maze->lbtable[(int)goali].stoneidx  = stonei;
+                                        # maze->lbtable[(int)stonei].goalidx  = goali;
+                                        # maze->lbtable[(int)stonei].distance =
+                                            # StoneDist(maze,
+                                                # maze->stones[(int)stonei].loc,
+                                                # maze->goals[(int)goali].loc);
+                                        # maze->h +=
+                                                # maze->lbtable[(int)stonei].distance;
+                                        # taken[(int)goali] = YES;
+                                        # break;
+                                # }
+                        # }
+                # }
+        # }
+        # MinMatch(maze,0,NULL,ENDPATH);
+        return
+
 
