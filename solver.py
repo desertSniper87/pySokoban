@@ -99,6 +99,7 @@ def IDAstar(sokomap, heuristic) -> [(int, int)]:
     it = 0
 
     sokomap.uniqueBlocksGoals()
+    sokomap.buildLowerBoundTable()
 
     while True:
         pathLimit += 1
@@ -114,6 +115,9 @@ def IDAstar(sokomap, heuristic) -> [(int, int)]:
                 currentState.printMap()
                 moveList = currentState.getMoveList()
                 print(f'"openSet.pop(0)" movelist={getFormattedMoves(moveList)}')
+
+            if len(currentState.getUnplacedBlocks()) < 1:
+                print()
 
 
             nodes = nodes + 1

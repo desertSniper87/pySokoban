@@ -4,7 +4,7 @@ from copy import deepcopy
 from typing import TypeVar
 SokoMap = TypeVar('SokoMap')
 
-from solver import DIRECTION_DICT
+from solver import DIRECTION_DICT, manhattanDistance
 
 from settings import DEV_DEBUG
 
@@ -22,6 +22,8 @@ class SokoMap:
     TILES_WRONG_FOR_BLOCK = frozenset([TILE_WALL, TILE_BLOCK_ON_GOAL, TILE_DEADLOCK]) # And Tile Block
     TILES_WRONG_FOR_2x2 = frozenset([TILE_WALL, TILE_BLOCK_ON_GOAL]) # And Tile Block
     TILES_SPACEY = frozenset([TILE_SPACE, TILE_DEADLOCK])
+
+    lowerBoundTable = {}
 
     def isTileWrongForBlock(self, tile) -> bool:
         if self.isTileBlock(tile) or tile in self.TILES_WRONG_FOR_2x2:
@@ -62,7 +64,7 @@ class SokoMap:
         self.parent = None
         self.moveList = []
 
-        self.hVal = 0
+        self.lowerBoundSum = 0
 
     def __eq__(self, other):
         if isinstance(other, SokoMap):
@@ -695,48 +697,17 @@ class SokoMap:
         # int  taken[MAXSTONES];
 
         # initialize table with just any matching
-        self.h = 0
+        self.lowerBoundSum = 0
         self.pen = 0
         self.lowerBoundTable = {}
         # memset(taken,0,sizeof(int)*maze->number_stones);
 
         # first get all the done stones in
         nUnplacedBlocks = len(self.getUnplacedBlocks())
-        self.buildLowerBoundTable()
-        for i in range(nUnplacedBlocks):
-            self.lowerBoundTable
-        # for (stonei=0; stonei<maze->number_stones; stonei++) {
-                # maze->lbtable[(int)stonei].distance = MAXDIST;
-                # if (  IsBitSetBS(maze->stones_done,maze->stones[stonei].loc)
-                    # &&IsBitSetBS(maze->goal,maze->stones[stonei].loc)) {
-                        # /* make sure this guy gets home */
-                        # goali = maze->Phys[maze->stones[stonei].loc].goal;
-                        # maze->lbtable[(int)goali].stoneidx  = stonei;
-                        # maze->lbtable[(int)stonei].goalidx  = goali;
-                        # maze->lbtable[(int)stonei].distance = 0;
-                        # taken[(int)goali] = YES;
-                # }
-        # }
-        # /* now look for any matching for the once not done yet */
-        # for (stonei=0; stonei<maze->number_stones; stonei++) {
-                # if (maze->lbtable[(int)stonei].distance == MAXDIST) {
-                        # for (goali=0; goali<maze->number_goals; goali++) {
-                                # if (taken[(int)goali] == NO) {
-                                        # maze->lbtable[(int)goali].stoneidx  = stonei;
-                                        # maze->lbtable[(int)stonei].goalidx  = goali;
-                                        # maze->lbtable[(int)stonei].distance =
-                                            # StoneDist(maze,
-                                                # maze->stones[(int)stonei].loc,
-                                                # maze->goals[(int)goali].loc);
-                                        # maze->h +=
-                                                # maze->lbtable[(int)stonei].distance;
-                                        # taken[(int)goali] = YES;
-                                        # break;
-                                # }
-                        # }
-                # }
-        # }
-        # MinMatch(maze,0,NULL,ENDPATH);
+        for blockI, goalI in zip(self.getUnplacedBlocks(), self.getGoals()):
+            print(blockI, goalI)
+            self.lowerBoundSum += manhattanDistance(blockI, goalI)
+
         return
 
 
